@@ -1,10 +1,18 @@
 use std::fs::File;
 use std::path::Path;
 use std::io::Read;
+use std::io::Write;
+use std::fs::OpenOptions;
+
+fn add_new_content(mut f: &File){
+
+    f.write_all(b"51,Until i found you,Stephen Sanchez,Alternative/independent,97");
+}
 
 fn read_file(mut f: &File) -> String{
     let mut text = String::new();
     f.read_to_string(&mut text).unwrap();
+    println!("{}",text);
     return text;
 }
 
@@ -59,11 +67,20 @@ fn mas_menos_ranking(arreglo: [[&str;5];51]) {
     println!("la pista menos popular es la n°{}, que es {}, con una popularidad de {} puntos", buscador_menor, arreglo[buscador_menor- 1][1], menor);
 }
 
+fn open_file_to_append(path: &Path) -> File{
+    let mut binding = OpenOptions::new();
+    let binding = binding.append(true);
+    let file = match binding.open(path){
+        Err(_why) => panic!("No se puede abrir el archivo porque {}", _why),
+        Ok(file) => file,
+    };
+    return file
+}
+
 fn main() {
     let path = Path::new("top50.csv");
     let texto = open_file_to_read(path);
     let mut arreglo: [[&str;5];51] = [["";5];51];
-    //arreglo = hacer_arreglo(texto, arreglo);
 
     {
         let split_1 = texto.split("\n");
@@ -88,12 +105,10 @@ fn main() {
     }
 
     println!("----------------------------------------------------------");
-    let split_1 = texto.split("\n");
-    for line in split_1 {
-        println!("{}", line)
-    }
-    println!("----------------------------------------------------------");
     mas_menos_ranking(arreglo);
     println!("----------------------------------------------------------");
+
+    let file = open_file_to_append(path);
+    add_new_content(&file);
 
 }
