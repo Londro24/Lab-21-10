@@ -29,6 +29,35 @@ fn open_file_to_read(p: &Path) -> String{
 
 }
 
+fn mas_menos_ranking(arreglo: [[&str;5];51]) {
+    let mut _numero_1 = 0;
+    let mut _numero_2 = 0;
+    let mut mayor = 0;
+    let mut menor = 100;
+    let mut buscador_mayor = 0;
+    let mut buscador_menor = 0;
+
+    for line in 0..49 {
+        _numero_1 = arreglo[line][4].parse().unwrap();
+        _numero_2 = arreglo[line + 1][4].parse().unwrap();
+        if _numero_1 > _numero_2 && (_numero_1 > mayor || _numero_2 > mayor) {
+            mayor = _numero_1;
+        } else if _numero_2 > _numero_1 && (_numero_1 > mayor || _numero_2 > mayor) {
+            mayor = _numero_2;
+            buscador_mayor = line + 2
+        }
+        
+        if _numero_1 < _numero_2 && (_numero_1 < menor || _numero_2 < menor) {
+            menor = _numero_1;
+        } else if _numero_2 < _numero_1 && (_numero_1 < menor || _numero_2 < menor) {
+            menor = _numero_2;
+            buscador_menor = line + 2
+        }
+    }
+
+    println!("la pista mas popular es la n°{}, que es {}, con una popularidad de {} puntos", buscador_mayor, arreglo[buscador_mayor- 1][1], mayor);
+    println!("la pista menos popular es la n°{}, que es {}, con una popularidad de {} puntos", buscador_menor, arreglo[buscador_menor- 1][1], menor);
+}
 
 fn main() {
     let path = Path::new("top50.csv");
@@ -36,30 +65,35 @@ fn main() {
     let mut arreglo: [[&str;5];51] = [["";5];51];
     //arreglo = hacer_arreglo(texto, arreglo);
 
-    let split_1 = texto.split("\n");
-    let mut contador_line = 0;
+    {
+        let split_1 = texto.split("\n");
+        let mut contador_line = 0;
+        for line in split_1 {
+            let mut _contador_thing = 0; 
+            let split_2 = line.split(",");
+            for thing in split_2 {
 
-    for line in split_1 {
-        let mut _contador_thing = 0; 
-        let split_2 = line.split(",");
-        for thing in split_2 {
+                if contador_line > 0 {
+                    arreglo[contador_line-1][_contador_thing] = thing
+                }
 
-            if contador_line > 0 {
-                arreglo[contador_line-1][_contador_thing] = thing
+                _contador_thing += 1;
             }
 
-            _contador_thing += 1;
-        }
-
-        contador_line += 1;
-        if contador_line == 52 {
-            break;
+            contador_line += 1;
+            if contador_line == 52 {
+                break;
+            }
         }
     }
 
     println!("----------------------------------------------------------");
-    for index in 0..52 {
-        println!("{:?}", arreglo[index])
+    let split_1 = texto.split("\n");
+    for line in split_1 {
+        println!("{}", line)
     }
+    println!("----------------------------------------------------------");
+    mas_menos_ranking(arreglo);
+    println!("----------------------------------------------------------");
 
 }
